@@ -2,12 +2,15 @@ import { pageTitleStyles } from "@/styles";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { getImageURLAction } from "@/app/actions";
+import { getImageURLAction } from "@/app/items/create/actions";
 import { formatDistance } from "date-fns";
 import { ConvertToRupees } from "@/utils/convert";
 import { createBidAction } from "./actions";
 import { getBidForItem } from "@/data-access/bids";
 import { getItem } from "@/data-access/items";
+import { auth } from "@/auth";
+import { isBidOver } from "@/utils/bids";
+import { Badge } from "@/components/ui/badge";
 
 function formatTimestamp(timestamp: Date) {
     return formatDistance(timestamp, new Date(), { addSuffix: true });
@@ -18,6 +21,7 @@ export default async function ItemPage({
 }: {
     params: { itemId: string };
 }) {
+    const session = await auth();
     const item = await getItem(parseInt(itemId));
     if (!item) {
         return <div className="space-y-6 flex flex-col items-center">
@@ -37,12 +41,19 @@ export default async function ItemPage({
     const allBids = await getBidForItem(item.id);
     const hasBids = allBids.length > 0;
 
+    const canPlaceBid = session && item.userId !== session.user.id && !isBidOver(item);
+
     const imageURL = await getImageURLAction(item.fileKey);
     return (
         <main className="space-y-8">
             <div className="flex gap-8">
                 <div className="flex flex-col gap-6">
                     <h1 className={pageTitleStyles}><span className="font-normal">Auction for</span> {item.name}</h1>
+                    {isBidOver(item) && (
+                        <Badge className="w-fit" variant="destructive">
+                            Bidding Over
+                        </Badge>
+                    )}
                     <Image
                         className="rounded-xl"
                         src={imageURL}
@@ -60,7 +71,7 @@ export default async function ItemPage({
                             <span className="font-bold"> Rs. {ConvertToRupees(item.startingPrice)}</span>
                         </div>
                         <div>
-                            Bid Interval 
+                            Bid Interval
                             <span className="font-bold"> Rs. {ConvertToRupees(item.bidInterval)}</span>
                         </div>
                     </div>
@@ -68,9 +79,11 @@ export default async function ItemPage({
                 <div className="space-y-4 flex-1">
                     <div className="flex justify-between">
                         <h2 className="text-2xl font-bold">Current Bids</h2>
-                        <form action={createBidAction.bind(null, item.id)}>
-                            <Button>Place a Bid</Button>
-                        </form>
+                        {canPlaceBid && (
+                            <form action={createBidAction.bind(null, item.id)}>
+                                <Button>Place a Bid</Button>
+                            </form>
+                        )}
                     </div>
                     {hasBids ? (
                         <ul className="space-y-4">
@@ -92,12 +105,14 @@ export default async function ItemPage({
                         <div className="flex flex-col items-center bg-gray-100 rounded-xl p-12">
                             <Image src="/nobidsyet.svg" width="300" height="300" alt="Package" />
                             <h2 className="text-2xl font-bold">No bids yet</h2>
-                            <br/>
-                            <form action={createBidAction.bind(null, item.id)}>
-                                <Button>Place a Bid</Button>
-                            </form>
+                            <br />
+                            {canPlaceBid && (
+                                <form action={createBidAction.bind(null, item.id)}>
+                                    <Button>Place a Bid</Button>
+                                </form>
+                            )}
                         </div>
-                )}
+                    )}
                 </div>
             </div>
         </main>

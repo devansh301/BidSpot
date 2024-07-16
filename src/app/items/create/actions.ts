@@ -16,11 +16,13 @@ export async function getImageURLAction(key: string) {
 export async function createItemAction({
     fileName,
     name,
-    startingPrice
+    startingPrice,
+    endDate
 }:{
     fileName: string, 
     name: string, 
-    startingPrice: number
+    startingPrice: number,
+    endDate: Date
 }) {
     const session = await auth();
 
@@ -31,15 +33,12 @@ export async function createItemAction({
     if (!user || !user.id) {
         throw new Error("Unauthorized");
     }
-    console.log(name,
-      startingPrice,
-      fileName,
-      user.id);
     await database.insert(items).values({
       name,
       startingPrice,
       fileKey: fileName,
       userId: user.id!,
+      endDate,
     });
     redirect("/");
 }

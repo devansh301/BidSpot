@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { database } from "@/db/database";
 import { bids, items } from "@/db/schema";
+import { isBidOver } from "@/utils/bids";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -20,9 +21,12 @@ export async function createBidAction(itemId: number) {
   if (!item) {
     throw new Error("Item not found");
   }
-  console.log(item);
+  
+  if (isBidOver(item)) {
+    throw new Error("This auction is already over");
+  }
 
-  const latestBidValue = item.currentBid + item.bidInterval + (item.currentBid < item.startingPrice ? item.startingPrice : 0);
+  const latestBidValue = (item.currentBid < item.startingPrice ? item.startingPrice : item.currentBid + item.bidInterval );
   await database.insert(bids).values({
     amount: latestBidValue,
     itemId,

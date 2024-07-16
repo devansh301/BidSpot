@@ -2,24 +2,33 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
-import { createItemAction, createUploadUrlAction } from "../../actions";
+import { createItemAction, createUploadUrlAction } from "./actions";
 import { pageTitleStyles } from "@/styles";
+import { DatePickerDemo } from "@/components/date-picker";
+import { useState } from "react";
 
 export default function CreatePage() {
+    const [date, setDate] = useState<Date | undefined>();
+
     return (
         <main className="space-y-8">
             <h1 className={pageTitleStyles}>Post an Item</h1>
             <form className="flex flex-col border p-8 rounded-xl space-y-4 max-w-lg"
                 onSubmit={async (e) => {
                     e.preventDefault();
+
+                    if (!date) {
+                        return;
+                    }
+
                     const form = e.currentTarget as HTMLFormElement;
                     const formData = new FormData(form);
                     const file = formData.get("file") as File;
-                    
+
                     const uploadUrl = await createUploadUrlAction(file.name, file.type);
                     const uploadFormData = new FormData();
                     uploadFormData.append("file", file);
-                    
+
                     await fetch(uploadUrl, {
                         method: "PUT",
                         body: file
@@ -35,24 +44,26 @@ export default function CreatePage() {
                         name,
                         startingPrice: startingPriceInCents,
                         fileName: file.name,
+                        endDate: date,
                     });
                 }}
             >
-                <Input 
+                <Input
                     required
-                    className="max-w-lg" 
-                    name="name" 
-                    placeholder="Name your item" 
+                    className="max-w-lg"
+                    name="name"
+                    placeholder="Name your item"
                 />
-                <Input 
+                <Input
                     required
-                    className="max-w-lg" 
-                    name="startingPrice" 
+                    className="max-w-lg"
+                    name="startingPrice"
                     type="number"
                     step="0.01"
-                    placeholder="What to start your auction at" 
+                    placeholder="What to start your auction at"
                 />
-                <Input type="file" name="file"/>
+                <Input type="file" name="file" />
+                <DatePickerDemo date={date} setDate={setDate} />
                 <Button className="self-end" type="submit">Post Bid</Button>
             </form>
         </main>

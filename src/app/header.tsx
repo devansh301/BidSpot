@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SignIn } from "@/components/ui/sign-in";
-import { SignOut } from '@/components/ui/sign-out';
+import { SignIn } from "@/components/sign-in";
+import { SignOut } from '@/components/sign-out';
 import { auth } from "@/auth";
 
 export async function Header() {
@@ -17,12 +17,16 @@ export async function Header() {
                     <Link href="/" className="flex items-center gap-1 hover:underline">
                         All Auctions
                     </Link>
-                    <Link href="/items/create" className="flex items-center gap-1 hover:underline">
-                        Create Auction
-                    </Link>
-                    <Link href="/auctions" className="flex items-center gap-1 hover:underline">
-                        My Auctions
-                    </Link>
+                    {session && (
+                        <>
+                            <Link href="/items/create" className="flex items-center gap-1 hover:underline">
+                                Create Auction
+                            </Link>
+                            <Link href="/auctions" className="flex items-center gap-1 hover:underline">
+                                My Auctions
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
             <div className="flex items-center gap-4">
