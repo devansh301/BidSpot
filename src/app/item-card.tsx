@@ -1,6 +1,9 @@
 import { Item } from "@/db/schema";
 import Image from "next/image"
-import { getImageURLAction } from "./actions";
+import { getImageURLAction } from "@/app/actions";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ConvertToRupees } from './../utils/convert';
 
 export async function ItemCard({item} : { item: Item}) {
     const imageURL = await getImageURLAction(item.fileKey);
@@ -13,7 +16,10 @@ export async function ItemCard({item} : { item: Item}) {
                 height={200}
             />
             <h2 className="text-xl font-bold">{item.name}</h2>
-            <p className="text-lg">starting price: Rs.{item.startingPrice / 100}</p>
+            <p className="text-lg">starting price: Rs.{ConvertToRupees(item.startingPrice)}</p>
+            <Button asChild>
+                <Link href={`/items/${item.id}`}>Place Bid</Link>
+            </Button>
         </div>
     );
 }
