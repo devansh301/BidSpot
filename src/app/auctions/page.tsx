@@ -11,9 +11,8 @@ export default async function MyAuctionPage() {
     if (!session || !session.user || !session.user.id) {
         throw new Error("Unauthorized");
     }
-    const allItems = await database.query.items.findMany({
-        where: eq(items.userId, session.user.id),
-    });
+    
+    const allItems = await database.select().from(items).where(eq(items.userId,session.user.id));
     const has_items = allItems.length > 0;
     return (
         <main className="space-y-8">

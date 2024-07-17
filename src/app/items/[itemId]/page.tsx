@@ -23,6 +23,7 @@ export default async function ItemPage({
 }) {
     const session = await auth();
     const item = await getItem(parseInt(itemId));
+    console.log(item);
     if (!item) {
         return <div className="space-y-6 flex flex-col items-center">
             <h2 className="text-3xl font-bold">Item not found</h2>
@@ -94,7 +95,7 @@ export default async function ItemPage({
                                             <span className="font-bold">
                                                 Rs. {ConvertToRupees(bid.amount)}
                                             </span>{" "}
-                                            by <span className="font-bold">{bid.user.name}</span>
+                                            by <span className="font-bold">{bid.userName}</span>
                                         </div>
                                         <div className="">{formatTimestamp(bid.timestamp)}</div>
                                     </div>

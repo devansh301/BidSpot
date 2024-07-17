@@ -1,4 +1,3 @@
-// import { pgTable, serial } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import {
   integer,

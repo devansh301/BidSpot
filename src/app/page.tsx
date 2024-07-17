@@ -1,8 +1,9 @@
 import { database } from "@/db/database";
 import { ItemCard } from "./item-card";
+import { items } from '@/db/schema';
 
 export default async function HomePage() {
-  const allItems = await database.query.items.findMany();
+  const allItems = await database.select().from(items);
   return (
     <main className="space-y-8">
       <h1 className="text-4xl font-bold">

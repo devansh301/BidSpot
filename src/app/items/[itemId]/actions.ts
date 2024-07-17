@@ -6,6 +6,7 @@ import { bids, items } from "@/db/schema";
 import { isBidOver } from "@/utils/bids";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { getItem } from "@/data-access/items";
 
 export async function createBidAction(itemId: number) {
   const session = await auth();
@@ -14,9 +15,7 @@ export async function createBidAction(itemId: number) {
     throw new Error("You must be logged in to place a bid");
   }
 
-  const item = await database.query.items.findFirst({
-    where: eq(items.id, itemId),
-  });
+  const item = await getItem(itemId);
 
   if (!item) {
     throw new Error("Item not found");
