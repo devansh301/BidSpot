@@ -23,7 +23,6 @@ export default async function ItemPage({
 }) {
     const session = await auth();
     const item = await getItem(parseInt(itemId));
-    console.log(item);
     if (!item) {
         return <div className="space-y-6 flex flex-col items-center">
             <h2 className="text-3xl font-bold">Item not found</h2>

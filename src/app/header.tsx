@@ -6,12 +6,12 @@ import { auth } from "@/auth";
 
 export async function Header() {
     const session = await auth();
-    return <div className="bg-gray-200 py-3">
+    return <div className="bg-gray-200 py-3 border-black border-b-2">
         <div className="container flex justify-between items-center">
             <div className="flex items-center gap-12">
                 <Link href="/" className="flex items-center gap-1 hover:underline">
-                    <Image src="/logo.png" width="50" height="50" alt="Logo"/>
-                    BidSpot
+                    <Image src="/logo.svg" width="50" height="50" alt="Logo"/>
+                    <h1 className="text-xl font-bold">BidSpot</h1>
                 </Link>
                 <div className="flex item-center gap-8">
                     <Link href="/" className="flex items-center gap-1 hover:underline">
